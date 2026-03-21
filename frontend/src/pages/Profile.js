@@ -1,36 +1,43 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { getCurrentUser } from "../services/api";
+import { getCurrentUser, updateEmail } from "../services/api";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const [email, setEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    getCurrentUser()
-      .then(data => setUser(data))
-      .catch(() => console.log("Unauthorized"));
+    getCurrentUser().then(data => setEmail(data.email));
   }, []);
 
-  if (!user) {
-    return (
-      <Layout>
-        <div>Loading...</div>
-      </Layout>
-    );
-  }
+  const handleUpdate = async () => {
+    try {
+      await updateEmail(newEmail);
+      setMessage("Email updated successfully");
+    } catch {
+      setMessage("Error updating email");
+    }
+  };
 
   return (
     <Layout>
       <div className="card p-4 shadow">
         <h4>Profile</h4>
 
-        <div className="mt-3">
-          <p><strong>Email:</strong> {user.email}</p>
-        </div>
+        <p><strong>Current Email:</strong> {email}</p>
 
-        <button className="btn btn-primary mt-3">
-          Edit Profile
+        <input
+          className="form-control mt-3"
+          placeholder="New email"
+          onChange={(e) => setNewEmail(e.target.value)}
+        />
+
+        <button className="btn btn-primary mt-3" onClick={handleUpdate}>
+          Update Email
         </button>
+
+        {message && <div className="alert alert-info mt-3">{message}</div>}
       </div>
     </Layout>
   );

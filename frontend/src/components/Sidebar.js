@@ -20,6 +20,12 @@ export default function Sidebar() {
         </li>
 
         <li className="nav-item mb-2">
+          <Link className="nav-link text-white" to="/upload">
+            Upload
+          </Link>
+        </li>
+
+        <li className="nav-item mb-2">
           <Link className="nav-link text-white" to="/settings">
             Settings
           </Link>

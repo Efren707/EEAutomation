@@ -4,7 +4,6 @@ import com.eeautomation.backend.model.User;
 import com.eeautomation.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
@@ -39,6 +38,26 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return user.getEmail(); // will be used for token
+        return user.getEmail();
+    }
+
+    public User updateEmail(String currentEmail, String newEmail) {
+        User user = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setEmail(newEmail);
+        return userRepository.save(user);
+    }
+
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
